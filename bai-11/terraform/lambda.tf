@@ -19,7 +19,6 @@ data "archive_file" "zip_file_for_lambda_origin_response" {
 provider "aws" {
   region  = "us-east-1"
   alias   = "us-east-1"
-  profile = "kala"
 }
 
 resource "aws_lambda_function" "viewer_request_function" {
