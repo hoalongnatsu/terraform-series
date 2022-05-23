@@ -1,6 +1,5 @@
 provider "aws" {
   region  = "us-west-2"
-  profile = "kala"
 }
 
 resource "tls_private_key" "key" {
