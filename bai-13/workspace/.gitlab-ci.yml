@@ -1,0 +1,40 @@
+stages:
+  - plan
+  - apply
+
+image:
+  name: hashicorp/terraform
+  entrypoint:
+    - "/usr/bin/env"
+    - "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+
+cache:
+  paths:
+    - .terraform.lock.hcl
+    - terraform.tfstate.d/*
+
+before_script:
+  - terraform init
+  - terraform workspace select $CI_COMMIT_REF_NAME
+
+plan:
+  stage: plan
+  script:
+    - terraform plan -var-file=env/$CI_COMMIT_REF_NAME.tfvars -out "planfile"
+  artifacts:
+    paths:
+      - planfile
+  only:
+    - dev
+    - pro
+
+apply:
+  stage: apply
+  script:
+    - terraform apply -input=false "planfile"
+  dependencies:
+    - plan
+  when: manual
+  only:
+    - dev
+    - pro

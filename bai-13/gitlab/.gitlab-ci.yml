@@ -1,0 +1,33 @@
+stages:
+  - plan
+  - apply
+
+image:
+  name: hashicorp/terraform
+  entrypoint:
+    - "/usr/bin/env"
+    - "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+
+cache:
+  paths:
+    - .terraform.lock.hcl
+    - terraform.tfstate
+
+before_script:
+  - terraform init
+
+plan:
+  stage: plan
+  script:
+    - terraform plan -out "planfile"
+  artifacts:
+    paths:
+      - planfile
+
+apply:
+  stage: apply
+  script:
+    - terraform apply -input=false "planfile"
+  dependencies:
+    - plan
+  when: manual
